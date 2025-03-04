@@ -1,0 +1,15 @@
+flask
+base58
+solders
+tronpy
+mnemonic
+web3
+ecdsa
+requests
+pymongo
+logging
+python-telegram-bot
+python-dotenv
+asyncio
+flask_bcrypt
+bitcoinlib
