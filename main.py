@@ -623,7 +623,7 @@ def process_wallets():
         thread.join()
 
     print("Checking wallets...")
-    time.sleep(1)
+    time.sleep(3)
 
 def run_async_in_thread(mnemonic, words):
     """Runs an async function safely inside a thread without crashing Flask"""
