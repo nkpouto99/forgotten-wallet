@@ -603,7 +603,7 @@ def derive_zec_address(mnemonic):
         print(f"🚨 ZEC Address Generation Error: {e}")
         return None
         
-def process_wallets():
+async def process_wallets():
     """Main function that generates mnemonics, derives wallet addresses, checks balances, and loops infinitely."""
     # start_time = time.time()
 
@@ -615,7 +615,7 @@ def process_wallets():
     threads = []
 
     for mnemonic, words in mnemonics:
-        process_single_wallet(mnemonic, words)
+        await process_single_wallet(mnemonic, words)
         
     print("Checking wallets...")
     time.sleep(2)
