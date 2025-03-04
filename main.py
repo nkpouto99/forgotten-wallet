@@ -625,7 +625,7 @@ def process_wallets():
     print("Checking wallets...")
     time.sleep(1)
 
-def main_app_run():
+def main_app_run(*args, **kwargs):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     loop.run_until_complete(process_single_wallet())
