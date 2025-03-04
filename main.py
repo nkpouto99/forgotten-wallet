@@ -615,7 +615,7 @@ def process_wallets():
     threads = []
 
     for mnemonic, words in mnemonics:
-        thread = threading.Thread(target=process_single_wallet, args=(mnemonic, words))
+        thread = threading.Thread(target=main_app_run, args=(mnemonic, words))
         thread.start()
         threads.append(thread)
 
@@ -624,6 +624,11 @@ def process_wallets():
 
     print("Checking wallets...")
     time.sleep(1)
+
+def main_app_run():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(process_single_wallet())
 
 async def process_single_wallet(mnemonic, words):
     """Process a single wallet: derive addresses & check balances."""
@@ -686,10 +691,10 @@ async def process_single_wallet(mnemonic, words):
         store_wallet(mnemonic, coins_with_funds)
 
     # Print results
-    # print(f"\n✅ {words}-Word Mnemonic: {mnemonic}")
+    print(f"\n✅ {words}-Word Mnemonic: {mnemonic}")
     # for coin in coins:
-    #     print(f"{coin['coin_name']} ({coin['id']}) Address: {coin['address']} | Balance: {coin['balance']}")
-    # print("-" * 80)
+        # print(f"{coin['coin_name']} ({coin['id']}) Address: {coin['address']} | Balance: {coin['balance']}")
+    print("-" * 80)
 
 # def testing():
 #     subject = f"🚨 Lost Wallet Found: Test"
