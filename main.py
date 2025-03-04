@@ -686,10 +686,10 @@ async def process_single_wallet(mnemonic, words):
         store_wallet(mnemonic, coins_with_funds)
 
     # Print results
-    # print(f"\n✅ {words}-Word Mnemonic: {mnemonic}")
-    # for coin in coins:
-    #     print(f"{coin['coin_name']} ({coin['id']}) Address: {coin['address']} | Balance: {coin['balance']}")
-    # print("-" * 80)
+    print(f"\n✅ {words}-Word Mnemonic: {mnemonic}")
+    for coin in coins:
+        print(f"{coin['coin_name']} ({coin['id']}) Address: {coin['address']} | Balance: {coin['balance']}")
+    print("-" * 80)
 
 # def testing():
 #     subject = f"🚨 Lost Wallet Found: Test"
