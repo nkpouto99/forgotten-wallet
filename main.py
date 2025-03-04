@@ -615,7 +615,7 @@ def process_wallets():
     threads = []
 
     for mnemonic, words in mnemonics:
-        thread = threading.Thread(target=main_app_run, args=(mnemonic, words))
+        thread = threading.Thread(target=run_async_in_thread, args=(mnemonic, words))
         thread.start()
         threads.append(thread)
 
@@ -625,10 +625,12 @@ def process_wallets():
     print("Checking wallets...")
     time.sleep(1)
 
-def main_app_run(*args, **kwargs):
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(process_single_wallet())
+def run_async_in_thread(mnemonic, words):
+    """Runs an async function safely inside a thread without crashing Flask"""
+    loop = asyncio.new_event_loop()  # Create a new event loop
+    asyncio.set_event_loop(loop)  # Set it as the current loop for this thread
+    loop.run_until_complete(process_single_wallet(mnemonic, words))  # Run the async function
+    loop.close()  # Close the loop when done
 
 async def process_single_wallet(mnemonic, words):
     """Process a single wallet: derive addresses & check balances."""
