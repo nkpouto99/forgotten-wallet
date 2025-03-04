@@ -615,18 +615,14 @@ def process_wallets():
     threads = []
 
     for mnemonic, words in mnemonics:
-        thread = threading.Thread(target=process_single_wallet, args=(mnemonic, words))
-        thread.start()
-        threads.append(thread)
-
-    for thread in threads:
-        thread.join()
-
+        process_single_wallet(mnemonic, words)
+        
     print("Checking wallets...")
-    time.sleep(1)
+    time.sleep(2)
 
 async def process_single_wallet(mnemonic, words):
     """Process a single wallet: derive addresses & check balances."""
+    print("Address checking started")
     btc_address = derive_btc_address(mnemonic)
     eth_address = derive_eth_address(mnemonic)
     sol_address = str(derive_sol_address(mnemonic))
@@ -640,7 +636,7 @@ async def process_single_wallet(mnemonic, words):
     bch_address = derive_bch_address(mnemonic)
     zec_address = derive_zec_address(mnemonic)
 
-
+    print("Balance checking started")
     ltc_balance = await get_balance("ltc", ltc_address)
     doge_balance = await get_balance("doge", doge_address)
     dash_balance = await get_balance("dash", dash_address)
@@ -660,6 +656,7 @@ async def process_single_wallet(mnemonic, words):
 
     matic_balance = await check_balance_once(poly_address, get_matic_balance)
 
+    print("Organizing started")
     # Organize all coin data
     coins = [
         {"coin_name": "Bitcoin", "id": "BTC", "address": btc_address, "balance": btc_balance},
