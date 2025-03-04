@@ -69,5 +69,6 @@ def run_wallet_script():
             print("⏸️ Scanning paused. Waiting for activation...")
         time.sleep(3)
 if __name__ == '__main__':
-    threading.Thread(target=run_wallet_script, daemon=True).start()
     app.run(host='0.0.0.0', port=10000, threaded=True)
+    threading.Thread(target=run_wallet_script, daemon=True).start()
+
