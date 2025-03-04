@@ -45,6 +45,11 @@ def stop_scan():
     global scanning_active
     scanning_active = False
     return jsonify({"message": "Scanning stopped ⏸️"})
+
+def start_flask():
+    """Start Flask & signal it's ready."""
+    app.run(host='0.0.0.0', port=10000, threaded=True)
+    print("✅ Flask has started!")
     
 def run_wallet_script():
     global wallet_check_count
@@ -69,6 +74,7 @@ def run_wallet_script():
             print("⏸️ Scanning paused. Waiting for activation...")
         time.sleep(3)
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000, threaded=True)
+    flask_thread = threading.Thread(target=start_flask, daemon=True)
+    flask_thread.start()
     threading.Thread(target=run_wallet_script, daemon=True).start()
 
