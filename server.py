@@ -53,7 +53,7 @@ def run_wallet_script():
 
     while True:
         if scanning_active:
-            print("🔄 Scanning wallets...")
+            print("🔄 Scanning wallets now...")
             process_wallets()
             process_wallets()
             wallet_check_count += 2
