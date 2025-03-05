@@ -48,18 +48,17 @@ def stop_scan():
 
 def start_flask():
     print("🚀 Starting Flask server first...")
-    app.run(host="0.0.0.0", port=10000, threaded=True)  # ✅ Keeps running
+    app.run(host="0.0.0.0", port=10000, debug=True, threaded=True)  # ✅ Keeps running
     
-def run_wallet_script():
+async def run_wallet_script():
     global wallet_check_count
     print("✅ Flask is running! Starting wallet processing...")
 
     while True:
         if scanning_active:
             print("🔄 Scanning wallets now...")
-            process_wallets()
-            process_wallets()
-            wallet_check_count += 2
+            await process_wallets()  
+            wallet_check_count += 1
 
             stats_collection.update_one(
                 {"name": "wallet_check_count"},
