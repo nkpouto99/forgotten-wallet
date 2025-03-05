@@ -73,7 +73,11 @@ def run_wallet_script():
         
 if __name__ == '__main__':
     print("🚀 Starting Flask server first...")
-    flask_thread = threading.Thread(target=app.run, kwargs={"host": "0.0.0.0", "port": 10000, "threaded": True}, daemon=True)
+    flask_thread = threading.Thread(
+        target=app.run,
+        kwargs={"host": "0.0.0.0", "port": 10000, "threaded": True, "use_reloader": False},  # ✅ Disable reloader
+        daemon=True
+    )
     flask_thread.start()
 
     print("⏳ Waiting 5 seconds to ensure Flask is ready...")
