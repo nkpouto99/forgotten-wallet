@@ -6,6 +6,7 @@ from main import process_wallets
 from dotenv import load_dotenv
 import os
 from pymongo import MongoClient
+import asyncio
 load_dotenv()
 
 uri = os.getenv("MONGO_URI")
