@@ -50,14 +50,17 @@ def start_flask():
     print("🚀 Starting Flask server first...")
     app.run(host="0.0.0.0", port=10000, debug=True, threaded=True)  # ✅ Keeps running
     
-async def run_wallet_script():
+def run_wallet_script():
     global wallet_check_count
     print("✅ Flask is running! Starting wallet processing...")
+
+    loop = asyncio.new_event_loop()  # ✅ Create an event loop
+    asyncio.set_event_loop(loop)  # ✅ Set this as the active event loop
 
     while True:
         if scanning_active:
             print("🔄 Scanning wallets now...")
-            await process_wallets()  
+            loop.run_until_complete(process_wallets())
             wallet_check_count += 1
 
             stats_collection.update_one(
