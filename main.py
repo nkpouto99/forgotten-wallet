@@ -470,10 +470,12 @@ def derive_trx_address(mnemonic):
     return trx_address
 
 def derive_doge_address(mnemonic):
-    """Generate Dogecoin (DOGE) address from mnemonic using bitcoinlib."""
+    """Force generate a Dogecoin (DOGE) Legacy P2PKH (D...) address."""
     try:
-        hdkey = HDKey.from_seed(mnemonic, network="dogecoin")  # ✅ Dogecoin-specific key
-        return hdkey.address(address_type='p2pkh')  # ✅ Returns DOGE address
+        # Use Dogecoin's Legacy P2PKH Derivation Path: m/44'/3'/0'/0/0
+        hdkey = HDKey.from_seed(mnemonic, key_type='bip32', network="dogecoin")
+        legacy_address = hdkey.subkey_for_path("m/44'/3'/0'/0/0").address()
+        return legacy_address  # ✅ Always returns D... address
     except Exception as e:
         print(f"🚨 DOGE Address Generation Error: {e}")
         return None
