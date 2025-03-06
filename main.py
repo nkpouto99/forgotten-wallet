@@ -521,7 +521,7 @@ def derive_doge_address(mnemonic):
     """Generate Dogecoin (DOGE) address from mnemonic using bitcoinlib."""
     try:
         hdkey = HDKey.from_seed(mnemonic, network="dogecoin")  # ✅ Dogecoin-specific key
-        return hdkey.address()  # ✅ Returns DOGE address
+        return hdkey.address(address_type='p2pkh')  # ✅ Returns DOGE address
     except Exception as e:
         print(f"🚨 DOGE Address Generation Error: {e}")
         return None
