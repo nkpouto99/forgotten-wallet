@@ -1,4 +1,4 @@
-from flask import Flask, Response, redirect, url_for, render_template
+from flask import Flask, Response, redirect, url_for, render_template, jsonify
 import threading
 import time
 from app import app
