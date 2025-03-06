@@ -1,5 +1,4 @@
 from mnemonic import Mnemonic
-from bit import Key
 from web3 import Web3
 import ecdsa
 import hashlib
