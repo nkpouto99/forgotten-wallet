@@ -396,10 +396,10 @@ PROXY_SERVER = "https://flask-vps.onrender.com/get_proxy"
 BLOCKCHAIR_BASE_URL = "https://api.blockchair.com"
 BLOCKCYPHER_BASE_URL = "https://api.blockcypher.com/v1"
 
-def get_proxy():
+async def get_proxy():
     """Fetch a new proxy from our Flask proxy server."""
     try:
-        response = requests.get(PROXY_SERVER, timeout=10)
+        response = requests.get(PROXY_SERVER, timeout=15)
         if response.status_code == 200:
             proxy = response.json().get("proxy")
             print(f"Using proxy: {proxy}")
