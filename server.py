@@ -46,6 +46,11 @@ def stop_scan():
     global scanning_active
     scanning_active = False
     return jsonify({"message": "Scanning stopped ⏸️"})
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint for Render to verify service is running."""
+    return jsonify({"status": "healthy"}), 200
     
 def run_wallet_script():
     global wallet_check_count
