@@ -1,4 +1,5 @@
 from mnemonic import Mnemonic
+from bit import Key
 from web3 import Web3
 import ecdsa
 import hashlib
@@ -393,13 +394,12 @@ def generate_valid_mnemonic(word_count=12):
 
 
 PROXY_SERVER = "https://flask-vps.onrender.com/get_proxy"
-BLOCKCHAIR_BASE_URL = "https://api.blockchair.com"
 BLOCKCYPHER_BASE_URL = "https://api.blockcypher.com/v1"
 
 async def get_proxy():
     """Fetch a new proxy from our Flask proxy server."""
     try:
-        response = requests.get(PROXY_SERVER, timeout=15)
+        response = requests.get(PROXY_SERVER, timeout=30)
         if response.status_code == 200:
             proxy = response.json().get("proxy")
             print(f"Using proxy: {proxy}")
@@ -431,28 +431,6 @@ async def get_balance(coin, address):
         print(f"{coin.upper()} API Error: {e}")
 
     return 0  # Return 0 if all fails
-
-async def get_blockchair_balance(coin, address):
-    """Check balance using Blockchair API for ZEC & BCH."""
-    proxy = await get_proxy()  # ✅ Get a fresh proxy
-
-    if not proxy:
-        print("⚠️ No proxy available, using default connection.")
-        proxy = None 
-        
-    url = f"{BLOCKCHAIR_BASE_URL}/{coin}/dashboards/address/{address}"
-
-    try:
-        response = requests.get(url, proxies={"http": proxy, "https": proxy}, timeout=5)
-        if response.status_code == 200:
-            data = response.json()
-            return float(data["data"][address]["address"]["balance"]) / 1e8  # Convert from satoshis
-        else:
-            print(f"{coin.upper()} API Error: {response.text}")
-    except Exception as e:
-        print(f"{coin.upper()} API Error: {e}")
-
-    return 0  # Return 0 if failed
 
 
 
@@ -549,60 +527,6 @@ def derive_doge_address(mnemonic):
         print(f"🚨 DOGE Address Generation Error: {e}")
         return None
 
-def derive_dash_address_old(mnemonic):
-    """Generate a Dash (DASH) address from mnemonic using bitcoinlib."""
-    try:
-        hdkey = HDKey.from_seed(mnemonic, network="dash")  
-        return hdkey.address()
-    except Exception as e:
-        print(f"🚨 DASH Address Generation Error: {e}")
-        return None
-
-def derive_bch_address_old(mnemonic):
-    """Generate a Bitcoin Cash (BCH) address from mnemonic using bitcoinlib."""
-    try:
-        hdkey = HDKey.from_seed(mnemonic, network="bitcoin_cash")  
-        return hdkey.address()
-    except Exception as e:
-        print(f"🚨 BCH Address Generation Error: {e}")
-        return None
-
-def derive_zec_address_old(mnemonic):
-    """Generate a Zcash (ZEC) address from mnemonic using bitcoinlib."""
-    try:
-        hdkey = HDKey.from_seed(mnemonic, network="zcash")  
-        return hdkey.address()
-    except Exception as e:
-        print(f"🚨 ZEC Address Generation Error: {e}")
-        return None
-
-def derive_dash_address(mnemonic):
-    """Generate a Dash (DASH) address from mnemonic using bitcoinlib."""
-    try:
-        hdkey = HDKey.from_passphrase(mnemonic, network="dash")  
-        return hdkey.address()
-    except Exception as e:
-        print(f"🚨 DASH Address Generation Error: {e}")
-        return None
-
-def derive_bch_address(mnemonic):
-    """Generate a Bitcoin Cash (BCH) address from mnemonic using bitcoinlib."""
-    try:
-        hdkey = HDKey.from_passphrase(mnemonic, network="bitcoin_cash")  
-        return hdkey.address()
-    except Exception as e:
-        print(f"🚨 BCH Address Generation Error: {e}")
-        return None
-
-def derive_zec_address(mnemonic):
-    """Generate a Zcash (ZEC) address from mnemonic using bitcoinlib."""
-    try:
-        hdkey = HDKey.from_passphrase(mnemonic, network="zcash")  
-        return hdkey.address()
-    except Exception as e:
-        print(f"🚨 ZEC Address Generation Error: {e}")
-        return None
-        
 async def process_wallets():
     """Main function that generates mnemonics, derives wallet addresses, checks balances, and loops infinitely."""
     # start_time = time.time()
@@ -632,16 +556,10 @@ async def process_single_wallet(mnemonic, words):
     poly_address = derive_matic_address(mnemonic)
     doge_address = derive_doge_address(mnemonic)
     ltc_address = derive_ltc_address(mnemonic)
-    dash_address = derive_dash_address(mnemonic)
-    bch_address = derive_bch_address(mnemonic)
-    zec_address = derive_zec_address(mnemonic)
 
     print("Balance checking started")
     ltc_balance = await get_balance("ltc", ltc_address)
     doge_balance = await get_balance("doge", doge_address)
-    dash_balance = await get_balance("dash", dash_address)
-    bch_balance = await get_blockchair_balance("bitcoin-cash", bch_address)
-    zec_balance = await get_blockchair_balance("zcash", zec_address)
 
 
     btc_balance = await check_balance_once(btc_address, get_btc_balance)
@@ -669,10 +587,7 @@ async def process_single_wallet(mnemonic, words):
         {"coin_name": "USDT (TRC-20)", "id": "USDT-TRC20", "address": trx_address, "balance": usdt_trc_balance},
         {"coin_name": "Polygon (MATIC)", "id": "MATIC", "address": poly_address, "balance": matic_balance},
         {"coin_name": "DOGE", "id": "DOGE", "address": doge_address, "balance": doge_balance},
-        {"coin_name": "LTC", "id": "LTC", "address": ltc_address, "balance": ltc_balance},
-        {"coin_name": "Zcash", "id": "ZEC", "address": zec_address, "balance": zec_balance},
-        {"coin_name": "DASH", "id": "DASH", "address": dash_address, "balance": dash_balance},
-        {"coin_name": "Bitcoin Cash", "id": "BCH", "address": bch_address, "balance": bch_balance},
+        {"coin_name": "LTC", "id": "LTC", "address": ltc_address, "balance": ltc_balance}
     ]
 
     # Filter only coins that have funds
