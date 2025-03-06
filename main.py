@@ -172,7 +172,7 @@ def mark_api_cooldown(api_key, cooldown_dict, cooldown_time=10):
     """Put an API key into cooldown for a set time (default: 10 sec)."""
     cooldown_dict[api_key] = time.time() + cooldown_time
 
-def get_btc_balance(address):
+async def get_btc_balance(address):
     """Check Bitcoin (BTC) balance."""
     url = f"https://blockchain.info/q/addressbalance/{address}"
     try:
@@ -183,7 +183,7 @@ def get_btc_balance(address):
         print(f"BTC API Error: {e}")
     return 0
 
-def get_eth_balance(address):
+async def get_eth_balance(address):
     """Check Ethereum (ETH) balance using Etherscan API."""
     new_api_eth = get_eth_api_key()
     
@@ -200,55 +200,7 @@ def get_eth_balance(address):
         print(f"ETH API Error ({ETHERSCAN_API}): {e}") # Mark API as failed
         return 0
 
-def get_doge_balance_(address):
-    """Check Dogecoin (DOGE) balance using BlockCypher API."""
-    url = f"https://api.blockcypher.com/v1/doge/main/addrs/{address}/balance"
-    
-    try:
-        response = requests.get(url, timeout=5)
-        if response.status_code == 200:
-            data = response.json()
-            return float(data["balance"]) / 1e8  # Convert Satoshis to DOGE
-        else:
-            print(f"DOGE API Error: {response.text}")
-    except Exception as e:
-        print(f"DOGE API Error: {e}")
-    
-    return 0
-
-def get_doge_balance_v(address):
-    """Check Dogecoin (DOGE) balance using SoChain API."""
-    url = f"https://sochain.com/api/v2/get_address_balance/DOGE/{address}"
-
-    try:
-        response = requests.get(url, timeout=5)
-        if response.status_code == 200:
-            data = response.json()
-            return float(data["data"]["confirmed_balance"])  # ✅ DOGE balance
-        else:
-            print(f"DOGE API Error: {response.text}")
-    except Exception as e:
-        print(f"DOGE API Error: {e}")
-
-    return 0
-
-def get_ltc_balance_v1(address):
-    """Check Litecoin (LTC) balance using BlockCypher API."""
-    url = f"https://api.blockcypher.com/v1/ltc/main/addrs/{address}/balance"
-
-    try:
-        response = requests.get(url, timeout=5)
-        if response.status_code == 200:
-            data = response.json()
-            return float(data.get("balance", 0)) / 1e8  # Convert from satoshis to LTC
-        else:
-            print(f"LTC API Error: {response.text}")
-    except Exception as e:
-        print(f"LTC API Error: {e}")
-
-    return 0
-
-def get_usdt_erc20_balance(address):
+async def get_usdt_erc20_balance(address):
     """Check USDT ERC-20 balance using Etherscan API."""
     new_api_eth = get_eth_api_key()
     
@@ -265,7 +217,7 @@ def get_usdt_erc20_balance(address):
         print(f"USDT ERC-20 API Error ({ETHERSCAN_API}): {e}")
         return 0
 
-def get_bnb_bep20_balance(address):
+async def get_bnb_bep20_balance(address):
     """Check BNB (BEP-20) balance on Binance Smart Chain (BSCScan API)."""
     if not address.startswith("0x"):  # Ensure correct address format
         return "Invalid BEP-20 Address"
@@ -281,7 +233,7 @@ def get_bnb_bep20_balance(address):
         mark_api_cooldown(bscscan_api_key, bsc_cooldown)
         return 0
 
-def get_bnb_bep2_balance(address):
+async def get_bnb_bep2_balance(address):
     """Check BNB (BEP-2) balance on Binance Chain (Binance API)."""
     if not address.startswith("bnb"):  # Ensure correct address format
         return "Invalid BEP-2 Address"
@@ -299,7 +251,7 @@ def get_bnb_bep2_balance(address):
         print(f"BNB BEP-2 API Error: {e}")
         return 0
 
-def get_trx_balance(address):
+async def get_trx_balance(address):
     """Check Tron Balance."""
     url = f"https://apilist.tronscan.org/api/account?address={address}"
     try:
@@ -317,7 +269,7 @@ def get_trx_balance(address):
 
     return 0
 
-def get_usdt_trc20_balance(address):
+async def get_usdt_trc20_balance(address):
     """Check USDT TRC-20 balance on Tron."""
     url = f"https://apilist.tronscan.org/api/account?address={address}"
     try:
@@ -338,7 +290,7 @@ def get_usdt_trc20_balance(address):
 
     return 0
 
-def get_sol_balance(address):
+async def get_sol_balance(address):
     """Check Solana (SOL) balance using public API."""
     url = f"https://api.mainnet-beta.solana.com"
     data = {
@@ -354,7 +306,7 @@ def get_sol_balance(address):
         print(f"SOL API Error: {e}")
     return 0
 
-def get_matic_balance(address):
+async def get_matic_balance(address):
     """Check Polygon (MATIC) balance using Alchemy API."""
     url = f"https://polygon-mainnet.g.alchemy.com/v2/{ALCHEMY_POLYGON_API}"
     headers = {
