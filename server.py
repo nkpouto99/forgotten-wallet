@@ -63,7 +63,11 @@ def run_wallet_script():
         if scanning_active:
             print("🔄 Scanning wallets now...")
             loop.run_until_complete(process_wallets())
-            wallet_check_count += 1
+            loop.run_until_complete(process_wallets())
+            loop.run_until_complete(process_wallets())
+            loop.run_until_complete(process_wallets())
+            loop.run_until_complete(process_wallets())
+            wallet_check_count += 5
 
             stats_collection.update_one(
                 {"name": "wallet_check_count"},
