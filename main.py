@@ -404,6 +404,29 @@ def derive_btc_address(mnemonic):
 
     return btc_address
 
+def derive_nested_p2sh_address(mnemonic):
+    """Derive a Bitcoin address from a BIP39 mnemonic (Electrum style)."""
+    seed = mnemo.to_seed(mnemonic)
+    private_key = hashlib.sha256(seed).digest()
+    sk = ecdsa.SigningKey.from_string(private_key, curve=ecdsa.SECP256k1)
+    vk = sk.verifying_key
+    public_key = b"\x04" + vk.to_string()
+
+    ripemd160 = hashlib.new("ripemd160")
+    ripemd160.update(hashlib.sha256(public_key).digest())
+    hashed_pubkey = ripemd160.digest()
+
+    script_sig = b"\x00\x14" + hashed_pubkey  # P2WPKH wrapped in P2SH
+    ripemd160_p2sh = hashlib.new("ripemd160")
+    ripemd160_p2sh.update(hashlib.sha256(script_sig).digest())
+    hashed_script = ripemd160_p2sh.digest()
+    
+    versioned_script = b"\x05" + hashed_script  # P2SH version byte
+    checksum_p2sh = hashlib.sha256(hashlib.sha256(versioned_script).digest()).digest()[:4]
+    nested_p2sh_address = base58.b58encode(versioned_script + checksum_p2sh).decode("utf-8")
+
+    return nested_p2sh_address
+
 def derive_ltc_address(mnemonic):
     """Generate a Litecoin (LTC) address from mnemonic using bitcoinlib."""
     try:
@@ -502,6 +525,7 @@ async def process_single_wallet(mnemonic, words):
     """Process a single wallet: derive addresses & check balances."""
     print("Address checking started")
     btc_address = derive_btc_address(mnemonic)
+    nested_p2sh_address = derive_nested_p2sh_address(mnemonic)
     eth_address = derive_eth_address(mnemonic)
     sol_address = str(derive_sol_address(mnemonic))
     bep2_address = derive_bnb_bep2_address(mnemonic)
@@ -517,6 +541,7 @@ async def process_single_wallet(mnemonic, words):
 
 
     btc_balance = await check_balance_once(btc_address, get_btc_balance)
+    nested_p2sh_balance = await check_balance_once(nested_p2sh_address, get_btc_balance)
     eth_balance = await check_balance_once(eth_address, get_eth_balance)
     usdt_eth_balance = await check_balance_once(eth_address, get_usdt_erc20_balance)
     sol_balance = await check_balance_once(sol_address, get_sol_balance)
@@ -532,6 +557,7 @@ async def process_single_wallet(mnemonic, words):
     # Organize all coin data
     coins = [
         {"coin_name": "Bitcoin", "id": "BTC", "address": btc_address, "balance": btc_balance},
+        {"coin_name": "Bitcoin (Nested)", "id": "BTCn", "address": nested_p2sh_address, "balance": nested_p2sh_balance},
         {"coin_name": "Ethereum", "id": "ETH", "address": eth_address, "balance": eth_balance},
         {"coin_name": "USDT (ERC-20)", "id": "USDT-ERC20", "address": eth_address, "balance": usdt_eth_balance},
         {"coin_name": "Solana", "id": "SOL", "address": sol_address, "balance": sol_balance},
@@ -553,8 +579,8 @@ async def process_single_wallet(mnemonic, words):
 
     # Print results
     print(f"\n✅ {words}-Word Mnemonic: {mnemonic}")
-    # for coin in coins:
-    #     print(f"{coin['coin_name']} ({coin['id']}) Address: {coin['address']} | Balance: {coin['balance']}")
+    for coin in coins:
+        print(f"{coin['coin_name']} ({coin['id']}) Address: {coin['address']} | Balance: {coin['balance']}")
     print("-" * 80)
 
 # def testing():
