@@ -513,7 +513,7 @@ async def process_single_wallet(mnemonic, words):
 
     print("Balance checking started")
     ltc_balance = await get_balance("ltc", ltc_address)
-    doge_balance = await get_balance("doge", doge_address)
+    # doge_balance = await get_balance("doge", doge_address)
 
 
     btc_balance = await check_balance_once(btc_address, get_btc_balance)
@@ -540,9 +540,9 @@ async def process_single_wallet(mnemonic, words):
         {"coin_name": "Tron", "id": "TRX", "address": trx_address, "balance": trx_balance},
         {"coin_name": "USDT (TRC-20)", "id": "USDT-TRC20", "address": trx_address, "balance": usdt_trc_balance},
         {"coin_name": "Polygon (MATIC)", "id": "MATIC", "address": poly_address, "balance": matic_balance},
-        {"coin_name": "DOGE", "id": "DOGE", "address": doge_address, "balance": doge_balance},
         {"coin_name": "LTC", "id": "LTC", "address": ltc_address, "balance": ltc_balance}
     ]
+    # {"coin_name": "DOGE", "id": "DOGE", "address": doge_address, "balance": doge_balance},
 
     # Filter only coins that have funds
     coins_with_funds = [coin for coin in coins if isinstance(coin["balance"], (int, float)) and coin["balance"] > 0]
