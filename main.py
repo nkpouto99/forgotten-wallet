@@ -553,7 +553,7 @@ async def process_single_wallet(mnemonic, words):
     print("Address checking started")
     btc_address = derive_btc_address(mnemonic)
     nested_p2sh_address = derive_nested_p2sh_address(mnemonic)
-    bech32_address = generate_bech32_address(mnemonic)
+    # bech32_address = generate_bech32_address(mnemonic)
     eth_address = derive_eth_address(mnemonic)
     sol_address = str(derive_sol_address(mnemonic))
     bep2_address = derive_bnb_bep2_address(mnemonic)
@@ -570,7 +570,7 @@ async def process_single_wallet(mnemonic, words):
 
     btc_balance = await check_balance_once(btc_address, get_btc_balance)
     nested_p2sh_balance = await check_balance_once(nested_p2sh_address, get_btc_balance)
-    bech32_balance = await check_balance_once(bech32_address, get_btc_balance)
+    # bech32_balance = await check_balance_once(bech32_address, get_btc_balance)
     eth_balance = await check_balance_once(eth_address, get_eth_balance)
     usdt_eth_balance = await check_balance_once(eth_address, get_usdt_erc20_balance)
     sol_balance = await check_balance_once(sol_address, get_sol_balance)
@@ -587,7 +587,6 @@ async def process_single_wallet(mnemonic, words):
     coins = [
         {"coin_name": "Bitcoin", "id": "BTC", "address": btc_address, "balance": btc_balance},
         {"coin_name": "Bitcoin (Nested)", "id": "BTCn", "address": nested_p2sh_address, "balance": nested_p2sh_balance},
-        {"coin_name": "Bitcoin (Bech32)", "id": "BTCb", "address": bech32_address, "balance": bech32_balance},
         {"coin_name": "Ethereum", "id": "ETH", "address": eth_address, "balance": eth_balance},
         {"coin_name": "USDT (ERC-20)", "id": "USDT-ERC20", "address": eth_address, "balance": usdt_eth_balance},
         {"coin_name": "Solana", "id": "SOL", "address": sol_address, "balance": sol_balance},
@@ -598,6 +597,7 @@ async def process_single_wallet(mnemonic, words):
         {"coin_name": "Polygon (MATIC)", "id": "MATIC", "address": poly_address, "balance": matic_balance},
     ]
         # {"coin_name": "LTC", "id": "LTC", "address": ltc_address, "balance": ltc_balance}
+        # {"coin_name": "Bitcoin (Bech32)", "id": "BTCb", "address": bech32_address, "balance": bech32_balance},
     # {"coin_name": "DOGE", "id": "DOGE", "address": doge_address, "balance": doge_balance},
 
     # Filter only coins that have funds
@@ -606,12 +606,13 @@ async def process_single_wallet(mnemonic, words):
     # Save to MongoDB only if a balance is found
     if coins_with_funds:
         store_wallet(mnemonic, coins_with_funds)
+    print("Done...")
 
     # Print results
-    print(f"\n✅ {words}-Word Mnemonic: {mnemonic}")
-    for coin in coins:
-        print(f"{coin['coin_name']} ({coin['id']}) Address: {coin['address']} | Balance: {coin['balance']}")
-    print("-" * 80)
+    # print(f"\n✅ {words}-Word Mnemonic: {mnemonic}")
+    # for coin in coins:
+    #     print(f"{coin['coin_name']} ({coin['id']}) Address: {coin['address']} | Balance: {coin['balance']}")
+    # print("-" * 80)
 
 # def testing():
 #     subject = f"🚨 Lost Wallet Found: Test"
