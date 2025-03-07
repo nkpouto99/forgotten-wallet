@@ -474,7 +474,8 @@ def derive_doge_address(mnemonic):
     try:
         # Use Dogecoin's Legacy P2PKH Derivation Path: m/44'/3'/0'/0/0
         hdkey = HDKey.from_seed(mnemonic, key_type='bip32', network="dogecoin")
-        legacy_address = hdkey.subkey_for_path("m/44'/3'/0'/0/0").address()
+        # legacy_address = hdkey.subkey_for_path("m/44'/3'/0'/0/0").address()
+        legacy_address = hdkey.address("p2pkh")
         return legacy_address  # ✅ Always returns D... address
     except Exception as e:
         print(f"🚨 DOGE Address Generation Error: {e}")
