@@ -13,4 +13,4 @@ python-dotenv
 asyncio
 flask_bcrypt
 bitcoinlib
-segwit_addr
+bech32
