@@ -22,7 +22,6 @@ from dotenv import load_dotenv
 import os
 from bitcoinlib.keys import HDKey
 
-
 # Load environment variables
 load_dotenv()
 TELEGRAM_API_TOKEN = os.getenv("TELEGRAM_API_TOKEN")
