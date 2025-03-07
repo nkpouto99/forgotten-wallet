@@ -450,7 +450,7 @@ def generate_bech32_address(mnemonic):
     hashed_pubkey = hash160(public_key)
 
     # Encode as Bech32 (bc1... address)
-    bech32_address = bech32.bech32_encode("bc", [0] + list(hashed_pubkey))
+    bech32_address = bech32.bech32_encode("bc", bech32.convertbits(hashed_pubkey, 8, 5))
 
     return bech32_address
 
