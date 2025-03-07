@@ -427,7 +427,7 @@ def derive_nested_p2sh_address(mnemonic):
 
     return nested_p2sh_address
 
-import segwit_addr
+import bech32
 def hash160(data):
     """HASH160 = RIPEMD-160(SHA-256(data))"""
     return hashlib.new("ripemd160", hashlib.sha256(data).digest()).digest()
@@ -450,7 +450,7 @@ def generate_bech32_address(mnemonic):
     hashed_pubkey = hash160(public_key)
 
     # Encode as Bech32 (bc1... address)
-    bech32_address = segwit_addr.encode("bc", 0, hashed_pubkey)
+    bech32_address = bech32.bech32_encode("bc", [0] + list(hashed_pubkey))
 
     return bech32_address
 
